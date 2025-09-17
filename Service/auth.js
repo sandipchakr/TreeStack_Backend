@@ -1,8 +1,10 @@
 import JWT from "jsonwebtoken";
 import User from "../Models/User.js";
 import bcrypt from "bcrypt";
+import dotenv from "dotenv";
+dotenv.config();
 
-const secret = "JaiShreeKrishna@77";
+const secret = process.env.JWT_SECRET;
 
 export function createTokenForUser(user){
     const payload = {
