@@ -88,6 +88,7 @@ router.post("/signup", async (req, res) => {
 
                 res.json({ success: true, message: "OTP sent to email" });
         } catch (err) {
+                 console.error("❌ Signup error:", err);  
                 res.status(500).json({ message: "Signup failed", error: err.message });
         }
         //     await User.create({
