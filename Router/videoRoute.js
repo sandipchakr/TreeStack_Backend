@@ -10,21 +10,14 @@ const router = express.Router();
 
 async function getMetaData(url) {
   try {
-    const { data } = await axios.get(url, {
-      headers: {
-        "User-Agent": "Mozilla/5.0" // some sites block bots without UA
-      }
-    });
+    const { data } = await axios.get(`https://api.microlink.io/?url=${encodeURIComponent(url)}`);
 
-    const $ = cheerio.load(data);
-
-    // Extract OG tags
-    const title = $('meta[property="og:title"]').attr("content") || $("title").text();
-    const thumbnail = $('meta[property="og:image"]').attr("content");
+    const title = data?.data?.title || "Unknown Title";
+    const thumbnail = data?.data?.image?.url || "";
 
     return { title, thumbnail };
   } catch (err) {
-    // console.error("Error fetching metadata:", err.message);
+    console.error("Microlink fetch failed:", err.message);
     return { title: "Unknown Title", thumbnail: "" };
   }
 }
