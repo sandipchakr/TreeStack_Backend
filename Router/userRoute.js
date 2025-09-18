@@ -89,15 +89,9 @@ router.post("/signup", async (req, res) => {
                 res.json({ success: true, message: "OTP sent to email" });
         } catch (err) {
                  console.error("❌ Signup error:", err);  
+                 await PendingUser.deleteOne({ email });
                 res.status(500).json({ message: "Signup failed", error: err.message });
         }
-        //     await User.create({
-        //         firstname,
-        //         lastname,
-        //         email,
-        //         password
-        //     });
-        //     res.status(200).json({message:"signup succesfully done..."});
 });
 
 router.post("/verify-otp", async (req, res) => {
