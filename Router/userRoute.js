@@ -127,7 +127,7 @@ router.post("/signin", async (req, res) => {
                 return res.cookie("token", token,
                         {
                                 httpOnly: true,
-                                secure: process.env.NODE_ENV === "production", // only true in prod
+                                secure: true, // only true in prod
                                 sameSite: "None", // <-- important if frontend & backend are on different domains
                         }
                 ).json({ success: true, message: "You are loggedin" })
