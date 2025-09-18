@@ -25,28 +25,28 @@ const transporter = nodemailer.createTransport({
 });
 
 router.get("/me", requireAuth, async (req, res) => {
-  try {
-    const userId = req.user._id;
-    const user = await User.findById(userId).select("-password");
+        try {
+                const userId = req.user._id;
+                const user = await User.findById(userId).select("-password");
 
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
+                if (!user) {
+                        return res.status(404).json({ success: false, message: "User not found" });
+                }
 
-    const profileImageURL = user.profileImageURL?.startsWith("http")
-      ? user.profileImageURL
-      : `${process.env.BACKEND_URL || BASE_URL}${user.profileImageURL || ""}`;
+                const profileImageURL = user.profileImageURL?.startsWith("http")
+                        ? user.profileImageURL
+                        : `${process.env.BACKEND_URL || BASE_URL}${user.profileImageURL || ""}`;
 
-    res.json({
-      success: true,
-      user: {
-        ...user.toObject(),
-        profileImageURL,
-      },
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, message: "Failed to fetch user", error: err.message });
-  }
+                res.json({
+                        success: true,
+                        user: {
+                                ...user.toObject(),
+                                profileImageURL,
+                        },
+                });
+        } catch (err) {
+                res.status(500).json({ success: false, message: "Failed to fetch user", error: err.message });
+        }
 });
 
 router.post("/signup", async (req, res) => {
@@ -73,7 +73,7 @@ router.post("/signup", async (req, res) => {
                         firstname,
                         lastname,
                         email,
-                        password:HashedPassword,
+                        password: HashedPassword,
                         otp,
                         otpExpiry
                 })
@@ -88,8 +88,8 @@ router.post("/signup", async (req, res) => {
 
                 res.json({ success: true, message: "OTP sent to email" });
         } catch (err) {
-                 console.error("❌ Signup error:", err);  
-                 await PendingUser.deleteOne({ email });
+                console.error("❌ Signup error:", err);
+                await PendingUser.deleteOne({ email });
                 res.status(500).json({ message: "Signup failed", error: err.message });
         }
 });
@@ -124,7 +124,13 @@ router.post("/signin", async (req, res) => {
         const { email, password } = req.body;
         try {
                 const token = await checkpassword(email, password);
-                return res.cookie("token", token).json({ success: true, message: "You are loggedin" })
+                return res.cookie("token", token,
+                        {
+                                httpOnly: true,
+                                secure: process.env.NODE_ENV === "production", // only true in prod
+                                sameSite: "None", // <-- important if frontend & backend are on different domains
+                        }
+                ).json({ success: true, message: "You are loggedin" })
         } catch (error) {
                 res.status(401).json({ success: false, message: `Signin failed: ${error.message}` });
         }
