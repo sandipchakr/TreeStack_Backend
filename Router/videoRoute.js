@@ -21,6 +21,29 @@ async function getMetaData(url) {
         thumbnail: data.thumbnail_url
       };
     }
+
+    // for instagram special case
+    
+    if (url.includes("instagram.com")) {
+      try {
+        // Public Instagram posts (official oEmbed)
+        const oembedUrl = `https://graph.facebook.com/v12.0/instagram_oembed?url=${encodeURIComponent(url)}&omitscript=true`;
+        const { data } = await axios.get(oembedUrl);
+        return {
+          title: data.title || "Instagram Post",
+          thumbnail: data.thumbnail_url
+        };
+      } catch (instaErr) {
+        console.warn("Instagram oEmbed failed, fallback to OG scraping:", instaErr.message);
+        // fallback: scrape OG meta
+        const { data } = await axios.get(url, { headers: { "User-Agent": "Mozilla/5.0" } });
+        const $ = cheerio.load(data);
+        const title = $('meta[property="og:title"]').attr("content") || "Instagram Post";
+        const thumbnail = $('meta[property="og:image"]').attr("content") || "";
+        return { title, thumbnail };
+      }
+    }
+
     const { data } = await axios.get(url, {
       headers: {
         "User-Agent": "Mozilla/5.0" // some sites block bots without UA
