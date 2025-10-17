@@ -10,6 +10,17 @@ const router = express.Router();
 
 async function getMetaData(url) {
   try {
+    // youtube special case
+    if (url.includes("youtube.com") || url.includes("youtu.be")) {
+      // Use YouTube oEmbed API for metadata
+      const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`;
+      const { data } = await axios.get(oembedUrl);
+
+      return {
+        title: data.title,
+        thumbnail: data.thumbnail_url
+      };
+    }
     const { data } = await axios.get(url, {
       headers: {
         "User-Agent": "Mozilla/5.0" // some sites block bots without UA
