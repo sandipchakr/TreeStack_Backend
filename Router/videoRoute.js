@@ -62,6 +62,9 @@ async function getMetaData(url) {
     return { title: "Unknown Title", thumbnail: "" };
   }
 }
+function trimTitle(title, maxLength = 70) {
+  return title.length > maxLength ? title.slice(0, maxLength) + "..." : title;
+}
 function isValidUrl(url) {
   try {
     new URL(url);
@@ -92,7 +95,7 @@ router.post("/", requireAuth, async (req, res) => {
     const video = await Video.create({
       folderId,
       link,
-      title,
+      title: trimTitle(title),
       thumbnail
     });
 
