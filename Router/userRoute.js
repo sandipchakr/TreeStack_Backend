@@ -3,11 +3,13 @@ import User from "../Models/User.js";
 import { checkpassword } from "../Service/auth.js";
 import { requireAuth } from "../Middleware/auth.js";
 import PendingUser from "../Models/PendingUser.js";
-import nodemailer from "nodemailer";
+// import nodemailer from "nodemailer";
+import {Resend} from "resend"
 import dotenv from "dotenv"
 import { hashPassword, isStrongPassword } from "../Service/Password.js";
 dotenv.config();
 const BASE_URL = process.env.BACKEND_URL || `http://localhost:${process.env.PORT}`;
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const router = Router();
 
@@ -16,13 +18,13 @@ function generateOTP() {
 }
 
 //create transpoter using nodemailer:-
-const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-        }
-});
+// const transporter = nodemailer.createTransport({
+//         service: "gmail",
+//         auth: {
+//                 user: process.env.EMAIL_USER,
+//                 pass: process.env.EMAIL_PASS
+//         }
+// });
 
 router.get("/me", requireAuth, async (req, res) => {
         try {
@@ -79,7 +81,7 @@ router.post("/signup", async (req, res) => {
                 })
 
                 //send OTP mail:-
-                await transporter.sendMail({
+                await resend.emails.send({
                         from: process.env.EMAIL_USER,
                         to: email,
                         subject: "TreeStack OTP verification",
