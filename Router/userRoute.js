@@ -82,7 +82,7 @@ router.post("/signup", async (req, res) => {
 
                 //send OTP mail:-
                 await resend.emails.send({
-                        from: process.env.EMAIL_USER,
+                        from: "TreeStack <onboarding@resend.dev>",
                         to: email,
                         subject: "TreeStack OTP verification",
                         text: `Hi ${firstname}, your OTP is ${otp}. It valid for 5 minutes.`
