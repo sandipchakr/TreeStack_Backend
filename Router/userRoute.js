@@ -4,7 +4,7 @@ import { checkpassword } from "../Service/auth.js";
 import { requireAuth } from "../Middleware/auth.js";
 import PendingUser from "../Models/PendingUser.js";
 // import nodemailer from "nodemailer";
-import {Resend} from "resend"
+import { Resend } from "resend"
 import dotenv from "dotenv"
 import { hashPassword, isStrongPassword } from "../Service/Password.js";
 dotenv.config();
@@ -71,14 +71,11 @@ router.post("/signup", async (req, res) => {
 
                 //store pending user:-
 
-                await PendingUser.create({
-                        firstname,
-                        lastname,
-                        email,
-                        password: HashedPassword,
-                        otp,
-                        otpExpiry
-                })
+                await PendingUser.findOneAndUpdate(
+                        { email },
+                        { firstname, lastname, email, password: HashedPassword, otp, otpExpiry },
+                        { upsert: true, new: true }
+                );
 
                 //send OTP mail:-
                 await resend.emails.send({
@@ -138,8 +135,8 @@ router.post("/signin", async (req, res) => {
         }
 });
 router.get("/logout", (req, res) => {
-        res.clearCookie("token",{
-                 httpOnly: true,
+        res.clearCookie("token", {
+                httpOnly: true,
                 sameSite: "none",
                 secure: true
         });
