@@ -18,7 +18,7 @@ mongoose.connect(process.env.MONGO_URL).then(()=>console.log("mongodb connected.
 
 //middleware:-
 app.use(cors({
-    origin: "https://tree-stack.vercel.app",
+    origin: process.env.FRONTEND_URL,
     credentials: true,  
 }));
 app.use(cookieParser());
