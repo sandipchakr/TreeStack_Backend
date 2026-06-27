@@ -3,13 +3,13 @@ import User from "../Models/User.js";
 import { checkpassword } from "../Service/auth.js";
 import { requireAuth } from "../Middleware/auth.js";
 import PendingUser from "../Models/PendingUser.js";
-// import nodemailer from "nodemailer";
-import { Resend } from "resend"
+import nodemailer from "nodemailer";
+// import { Resend } from "resend"
 import dotenv from "dotenv"
 import { hashPassword, isStrongPassword } from "../Service/Password.js";
 dotenv.config();
 const BASE_URL = process.env.BACKEND_URL || `http://localhost:${process.env.PORT}`;
-const resend = new Resend(process.env.RESEND_API_KEY);
+// const resend = new Resend(process.env.RESEND_API_KEY);
 
 const router = Router();
 
@@ -18,13 +18,15 @@ function generateOTP() {
 }
 
 //create transpoter using nodemailer:-
-// const transporter = nodemailer.createTransport({
-//         service: "gmail",
-//         auth: {
-//                 user: process.env.EMAIL_USER,
-//                 pass: process.env.EMAIL_PASS
-//         }
-// });
+const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+});
 
 router.get("/me", requireAuth, async (req, res) => {
         try {
@@ -78,7 +80,7 @@ router.post("/signup", async (req, res) => {
                 );
 
                 //send OTP mail:-
-                await resend.emails.send({
+                await transporter.sendMail({
                         from: "TreeStack <onboarding@resend.dev>",
                         to: email,
                         subject: "TreeStack OTP verification",
