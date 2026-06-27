@@ -12,10 +12,7 @@ import { requireAuth } from "./Middleware/auth.js";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import cors from "cors";
-import dns from "dns";
 dotenv.config();
-
-dns.setDefaultResultOrder("ipv4first");
 //mongodb connection:-
 mongoose.connect(process.env.MONGO_URL).then(()=>console.log("mongodb connected.."))
 
